@@ -11,6 +11,12 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+#define IS_NULL_POINTER(p) \
+    do {                   \
+        if (!p)            \
+            return 0;      \
+    } while (0);
+
 /* Data structure declarations */
 
 /* Linked list element (You shouldn't need to change this) */

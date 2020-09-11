@@ -12,6 +12,7 @@
 queue_t *q_new()
 {
     queue_t *q = malloc(sizeof(queue_t));
+    IS_NULL_POINTER(q);
     /* TODO: What if malloc returned NULL? */
     q->head = NULL;
     q->size = 0;
@@ -38,6 +39,7 @@ bool q_insert_head(queue_t *q, char *s)
     list_ele_t *newh;
     /* TODO: What should you do if the q is NULL? */
     newh = malloc(sizeof(list_ele_t));
+    IS_NULL_POINTER(newh);
     /* Don't forget to allocate space for the string and copy it */
     /* What if either call to malloc returns NULL? */
     newh->next = q->head;
