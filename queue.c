@@ -92,7 +92,7 @@ bool q_insert_tail(queue_t *q, char *s)
         strncpy(cpy, s, strlen(s) + 1);
         newt->value = cpy;
         newt->next = NULL;
-        q->next = newt;
+        q->head->next = newt;
         q->size += 1;
         return true;
     }
