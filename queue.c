@@ -15,6 +15,7 @@ queue_t *q_new()
     IS_NULL_POINTER(q);
     /* TODO: What if malloc returned NULL? */
     q->head = NULL;
+    q->tail = NULL;
     q->size = 0;
     return q;
 }
@@ -48,10 +49,17 @@ bool q_insert_head(queue_t *q, char *s)
     /* TODO: What should you do if the q is NULL? */
     newh = malloc(sizeof(list_ele_t));
     IS_NULL_POINTER(newh);
+    char *cpy = malloc(sizeof(strlen(s)) + 1);
+    IS_NULL_POINTER(cpy);
+    strncpy(cpy, s, strlen(s) + 1);
+    newh->value = cpy;
     /* Don't forget to allocate space for the string and copy it */
     /* What if either call to malloc returns NULL? */
     newh->next = q->head;
     q->head = newh;
+    if (!q->tail) {
+        q->tail = newh;
+    }
     q->size += 1;
     return true;
 }
@@ -65,10 +73,31 @@ bool q_insert_head(queue_t *q, char *s)
  */
 bool q_insert_tail(queue_t *q, char *s)
 {
+    if (q->tail) {  // if tail is not null
+        list_ele_t *newt = malloc(sizeof(list_ele_t));
+        IS_NULL_POINTER(newt);
+        char *cpy = malloc(sizeof(strlen(s)) + 1);
+        IS_NULL_POINTER(cpy);
+        strncpy(cpy, s, strlen(s) + 1);
+        newt->value = cpy;
+        newt->next = NULL;
+        q->tail->next = newt;
+        q->size += 1;
+        return true;
+    } else {
+        list_ele_t *newt = malloc(sizeof(list_ele_t));
+        IS_NULL_POINTER(newt);
+        char *cpy = malloc(sizeof(strlen(s)) + 1);
+        IS_NULL_POINTER(cpy);
+        strncpy(cpy, s, strlen(s) + 1);
+        newt->value = cpy;
+        newt->next = NULL q->next = newt;
+        q->size += 1;
+        return true;
+    }
     /* TODO: You need to write the complete code for this function */
     /* Remember: It should operate in O(1) time */
     /* TODO: Remove the above comment when you are about to implement. */
-    q->size += 1;
     return false;
 }
 
