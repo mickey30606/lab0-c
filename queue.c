@@ -91,7 +91,8 @@ bool q_insert_tail(queue_t *q, char *s)
         IS_NULL_POINTER(cpy);
         strncpy(cpy, s, strlen(s) + 1);
         newt->value = cpy;
-        newt->next = NULL q->next = newt;
+        newt->next = NULL;
+        q->next = newt;
         q->size += 1;
         return true;
     }
