@@ -92,7 +92,8 @@ bool q_insert_tail(queue_t *q, char *s)
         strncpy(cpy, s, strlen(s) + 1);
         newt->value = cpy;
         newt->next = NULL;
-        q->head->next = newt;
+        q->head = newt;
+        q->tail = newt;
         q->size += 1;
         return true;
     }
@@ -114,7 +115,20 @@ bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
 {
     /* TODO: You need to fix up this code. */
     /* TODO: Remove the above comment when you are about to implement. */
+    IS_NULL_POINTER(q);
+    IS_NULL_POINTER(q->head);
+    IS_NULL_POINTER(sp);
+    //    size_t real_size =
+    //        (bufsize > strlen(q->head->value)) ? bufsize :
+    //        strlen(q->head->value);
+    strncpy(sp, q->head->value, bufsize);
+
+    list_ele_t *tmp;
+    tmp = q->head;
     q->head = q->head->next;
+    free(tmp->value);
+    free(tmp);
+
     q->size -= 1;
     return true;
 }
