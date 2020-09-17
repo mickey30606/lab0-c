@@ -23,6 +23,9 @@ queue_t *q_new()
 /* Free all storage used by queue */
 void q_free(queue_t *q)
 {
+    if (!q) {
+        return;
+    }
     while (q->head) {
         list_ele_t *tmp;
         tmp = q->head;
@@ -45,13 +48,22 @@ void q_free(queue_t *q)
  */
 bool q_insert_head(queue_t *q, char *s)
 {
+    IS_NULL_POINTER(q);
+    IS_NULL_POINTER(s);
     list_ele_t *newh;
     /* TODO: What should you do if the q is NULL? */
     newh = malloc(sizeof(list_ele_t));
     IS_NULL_POINTER(newh);
-    char *cpy = malloc(sizeof(strlen(s)) + 1);
-    IS_NULL_POINTER(cpy);
-    strncpy(cpy, s, strlen(s) + 1);
+    char *cpy = malloc(sizeof(char) * strlen(s) + 1);
+    if (!cpy) {
+        free(newh);
+        return false;
+    }
+    for (int i = 0; i < strlen(s); i++) {
+        *(cpy + i) = *(s + i);
+    }
+    *(cpy + strlen(s)) = '\0';
+    //    strncpy(cpy, s, strlen(s) + 1);
     newh->value = cpy;
     /* Don't forget to allocate space for the string and copy it */
     /* What if either call to malloc returns NULL? */
@@ -73,25 +85,28 @@ bool q_insert_head(queue_t *q, char *s)
  */
 bool q_insert_tail(queue_t *q, char *s)
 {
+    IS_NULL_POINTER(q);
+    IS_NULL_POINTER(s);
+    list_ele_t *newt = malloc(sizeof(list_ele_t));
+    IS_NULL_POINTER(newt);
+    char *cpy = malloc(sizeof(char) * strlen(s) + 1);
+    if (!cpy) {
+        free(newt);
+        return false;
+    }
+    //        strncpy(cpy, s, strlen(s) + 1);
+    for (int i = 0; i < strlen(s); i++) {
+        *(cpy + i) = *(s + i);
+    }
+    *(cpy + strlen(s)) = '\0';
+    newt->value = cpy;
+    newt->next = NULL;
     if (q->tail) {  // if tail is not null
-        list_ele_t *newt = malloc(sizeof(list_ele_t));
-        IS_NULL_POINTER(newt);
-        char *cpy = malloc(sizeof(strlen(s)) + 1);
-        IS_NULL_POINTER(cpy);
-        strncpy(cpy, s, strlen(s) + 1);
-        newt->value = cpy;
-        newt->next = NULL;
         q->tail->next = newt;
+        q->tail = newt;
         q->size += 1;
         return true;
     } else {
-        list_ele_t *newt = malloc(sizeof(list_ele_t));
-        IS_NULL_POINTER(newt);
-        char *cpy = malloc(sizeof(strlen(s)) + 1);
-        IS_NULL_POINTER(cpy);
-        strncpy(cpy, s, strlen(s) + 1);
-        newt->value = cpy;
-        newt->next = NULL;
         q->head = newt;
         q->tail = newt;
         q->size += 1;
@@ -121,7 +136,11 @@ bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
     //    size_t real_size =
     //        (bufsize > strlen(q->head->value)) ? bufsize :
     //        strlen(q->head->value);
-    strncpy(sp, q->head->value, bufsize);
+    //    strncpy(sp, q->head->value, bufsize);
+    for (int i = 0; i < bufsize; i++) {
+        *(sp + i) = *((q->head->value) + i);
+    }
+    *(sp + bufsize - 1) = '\0';
 
     list_ele_t *tmp;
     tmp = q->head;
@@ -139,6 +158,7 @@ bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
  */
 int q_size(queue_t *q)
 {
+    IS_NULL_POINTER(q);
     /* TODO: You need to write the code for this function */
     /* Remember: It should operate in O(1) time */
     /* TODO: Remove the above comment when you are about to implement. */
@@ -154,6 +174,18 @@ int q_size(queue_t *q)
  */
 void q_reverse(queue_t *q)
 {
+    if (!q || q->head == NULL || q->size <= 1) {
+        return;
+    }
+    list_ele_t *left = NULL, *right = q->head->next;
+    q->tail = q->head;
+    while (right != NULL) {
+        q->head->next = left;
+        left = q->head;
+        q->head = right;
+        right = right->next;
+    }
+    q->head->next = left;
     /* TODO: You need to write the code for this function */
     /* TODO: Remove the above comment when you are about to implement. */
 }
@@ -165,6 +197,50 @@ void q_reverse(queue_t *q)
  */
 void q_sort(queue_t *q)
 {
+    if (!q || !q->head)
+        return;
+
+    q->head = merge_sort(q->head);
+    return;
     /* TODO: You need to write the code for this function */
     /* TODO: Remove the above comment when you are about to implement. */
+}
+
+list_ele_t *merge_sort(list_ele_t *head)
+{
+    if (!head || !head->next)
+        return head;
+
+    list_ele_t *slow = head, *fast;
+    for (fast = head->next; fast && fast->next; fast = fast->next->next) {
+        slow = slow->next;
+    }
+
+    list_ele_t *mid = slow->next;
+    slow->next = NULL;
+    return merge(merge_sort(head), merge_sort(mid));
+}
+
+list_ele_t *merge(list_ele_t *left, list_ele_t *right)
+{
+    list_ele_t *head = NULL;
+    for (list_ele_t **iter = &head; true; iter = &((*iter)->next)) {
+        if (!left) {
+            *iter = right;
+            break;
+        }
+        if (!right) {
+            *iter = left;
+            break;
+        }
+        if (strcmp(left->value, right->value) < 0) {
+            *iter = left;
+            left = left->next;
+        } else {
+            *iter = right;
+            right = right->next;
+        }
+    }
+
+    return head;
 }
