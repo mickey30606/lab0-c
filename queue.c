@@ -54,15 +54,16 @@ bool q_insert_head(queue_t *q, char *s)
     /* TODO: What should you do if the q is NULL? */
     newh = malloc(sizeof(list_ele_t));
     IS_NULL_POINTER(newh);
-    char *cpy = malloc(sizeof(char) * strlen(s) + 1);
+    int len = strlen(s);
+    char *cpy = malloc(sizeof(char) * len + 1);
     if (!cpy) {
         free(newh);
         return false;
     }
-    for (int i = 0; i < strlen(s); i++) {
+    for (int i = 0; i < len; i++) {
         *(cpy + i) = *(s + i);
     }
-    *(cpy + strlen(s)) = '\0';
+    *(cpy + len) = '\0';
     //    strncpy(cpy, s, strlen(s) + 1);
     newh->value = cpy;
     /* Don't forget to allocate space for the string and copy it */
@@ -89,16 +90,17 @@ bool q_insert_tail(queue_t *q, char *s)
     IS_NULL_POINTER(s);
     list_ele_t *newt = malloc(sizeof(list_ele_t));
     IS_NULL_POINTER(newt);
-    char *cpy = malloc(sizeof(char) * strlen(s) + 1);
+    int len = strlen(s);
+    char *cpy = malloc(sizeof(char) * len + 1);
     if (!cpy) {
         free(newt);
         return false;
     }
     //        strncpy(cpy, s, strlen(s) + 1);
-    for (int i = 0; i < strlen(s); i++) {
+    for (int i = 0; i < len; i++) {
         *(cpy + i) = *(s + i);
     }
-    *(cpy + strlen(s)) = '\0';
+    *(cpy + len) = '\0';
     newt->value = cpy;
     newt->next = NULL;
     if (q->tail) {  // if tail is not null
@@ -137,10 +139,17 @@ bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
     //        (bufsize > strlen(q->head->value)) ? bufsize :
     //        strlen(q->head->value);
     //    strncpy(sp, q->head->value, bufsize);
+    int head_value_len = strlen(q->head->value);
     for (int i = 0; i < bufsize; i++) {
+        if (i >= head_value_len) {
+            *(sp + i) = '\0';
+            break;
+        }
         *(sp + i) = *((q->head->value) + i);
     }
-    *(sp + bufsize - 1) = '\0';
+    if (head_value_len >= bufsize) {
+        *(sp + bufsize - 1) = '\0';
+    }
 
     list_ele_t *tmp;
     tmp = q->head;
